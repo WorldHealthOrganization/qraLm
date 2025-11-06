@@ -82,7 +82,7 @@ sfSmearingCC <- function(data = list(),
                          nSurface) {
   Nt_batch <- data$N
   ProbUnitPos <- data$ProbUnitPos
-
+  
   # Get the simulation dimension
   # if(missing(nLots)) nLots <- data$nLots #test if nLots was defined
   # if(is.null(nLots)) warning("Add 'nLots=#' to function arguments") #test again if nLots is defined
@@ -91,40 +91,40 @@ sfSmearingCC <- function(data = list(),
   # if(is.null(sizeLot)) warning("Add 'sizeLot=#' to function arguments") #test again if sizeLot is defined
   nLots <- nrow(Nt_batch)
   sizeLot <- ncol(Nt_batch)
-
+  
   ##############################################################################
   # Lots of contaminated fish (coming from the original matrix N)
   ##############################################################################
-
+  
   pcc_flag <- matrix(stats::rbinom(nLots * sizeLot, size = 1, prob = pccSmearing), nrow = nLots, ncol = sizeLot)
   p_TR1 <- matrix((10^extraDistr::rtnorm(nLots * sizeLot, mean = trSmearingMean, sd = trSmearingSd, b = 0)),
-    nrow = nLots, ncol = sizeLot
+                  nrow = nLots, ncol = sizeLot
   )
   N_TR1 <- pcc_flag * stats::rbinom(nLots * sizeLot, size = nSurface, prob = p_TR1)
   N_total1 <- Nt_batch + N_TR1
-
+  
   ################################################################################
   # Lots of non-contaminated fish (lots added from "1-P")
   ################################################################################
   # Do more than needed for a better resampling
-  ad_batches <- round(nLots * (1 / data$P - 1))
+  ad_batches <- max(round(nLots * (1 / data$P - 1)), nLots)
   if (length(pccSmearing) != 1) stop("Need to update sfSmearingCC function")
   pcc_flag2 <- matrix(stats::rbinom(ad_batches * sizeLot, size = 1, prob = pccSmearing),
-    nrow = ad_batches, ncol = sizeLot
+                      nrow = ad_batches, ncol = sizeLot
   )
   p_TR2 <- matrix((10^extraDistr::rtnorm(ad_batches * sizeLot, mean = trSmearingMean, sd = trSmearingSd, b = 0)),
-    nrow = ad_batches, ncol = sizeLot
+                  nrow = ad_batches, ncol = sizeLot
   )
   N_total2 <- pcc_flag2 * stats::rbinom(ad_batches * sizeLot, size = nSurface, prob = p_TR2)
-
+  
   # Probability batches remain non-contaminated (rows with zero counts)
   zero_lines <- rowSums(N_total2) == 0
   prob_clean_batches <- mean(zero_lines)
   # Keeping only batches that ended up contaminated (from the clean fraction)
-  N_total2_c <- N_total2[!zero_lines, ]
+  N_total2_c <- N_total2[!zero_lines, , drop=FALSE]
   # Check the number of remaining positive lots
   N_newly_stock <- nrow(N_total2_c)
-
+  
   ###########################################################################
   # calculating probabilities of each contamination fraction and resizing
   ###########################################################################
@@ -132,19 +132,19 @@ sfSmearingCC <- function(data = list(),
   # Modified RP (was an error identified by UGB on 18 Jan 2024)
   p_NegFraction_CCevent <- (1 - data$P) * (1 - prob_clean_batches)
   overall_p_batches <- p_PosFraction_CCevent + p_NegFraction_CCevent
-
+  
   # re-arranging matrix of contaminated batches, and updating ProbUnitPos
   origin <- base::sample(c("Previously", "Newly"),
-    size = nLots,
-    prob = c(p_PosFraction_CCevent, p_NegFraction_CCevent), # Note: function will standardize to 1
-    replace = TRUE
+                         size = nLots,
+                         prob = c(p_PosFraction_CCevent, p_NegFraction_CCevent), # Note: function will standardize to 1
+                         replace = TRUE
   )
-
+  
   N_out <- matrix(NA, nrow = nLots, ncol = sizeLot)
-
+  
   # Lines of previously Positive lots
   N_out[origin == "Previously", ] <- N_total1[origin == "Previously", ]
-
+  
   # Lines of newly Positive lots
   N_newly <- sum(origin == "Newly")
   if (N_newly != 0) {
@@ -156,6 +156,7 @@ sfSmearingCC <- function(data = list(),
     }
     N_out[origin == "Newly", ] <- N_total2_c[sample_index2, ]
   }
+  
   
   # output
   N <- N_out

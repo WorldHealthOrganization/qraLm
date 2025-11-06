@@ -94,6 +94,11 @@ fvPartitioningCC <- function(data = list(),
                              trSd=0.40,
                              nEquip,
                              bCCFV) {
+  # Shortcut
+  if(probCC == 0 | sum(nEquip) == 0){
+    return(data)
+  }
+  
   ifelse(exists("nLots", data) == TRUE, nLots <- data$nLots, nLots <- nrow(data$N))
   ifelse(exists("sizeLot", data) == TRUE, sizeLot <- data$sizeLot, sizeLot <- ncol(data$N))
 

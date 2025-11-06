@@ -20,7 +20,8 @@
 #'   representing the total variability in the microbial concentration of contaminated units (scalar or vector).
 #' @param propVarInter proportion of the total variance (\eqn{C0\_sdLog10^2}) attributed
 #'   to between-lot variance. The remaining (`1-propVarInter`) is the proportion of within-lot variance.
-#' @param Poisson need to be defined
+#' @param if Poisson is `TRUE`, a Poisson distribution is used with parameter lambda = -log(1 - prob) / 25, with prob ~ Beta(alpha, beta).
+#' Note that, in this case `C0MeanLog` and `C0SdLog` are not used. 
 #' @param ... Other options used to control [LotGen()]
 #'
 #' @return A list of four elements:
@@ -130,7 +131,8 @@ Lot2LotGen <- function(nLots,
     # Then multiply by prev to fill only the contaminated units
     Ncounts <- round(posOrNeg * 10^Cest * unitSize)
   } else {
-    lambda <- -log(1 - prob) / 25
+    # protect against log(0) and log(1)
+    lambda <- -log(1 - pmax(pmin(prob, 1-10^-8), 10^-8)) / 25
     # Double protect the binomial because some prob can be extremely low
     NcountsLot <- extraDistr::rtpois(n = nLots, lambda = lambda * unitSize * sizeLot, a = 0)
     if (any(NcountsLot == 0)) {

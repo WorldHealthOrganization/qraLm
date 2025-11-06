@@ -39,9 +39,10 @@ representing the total variability in the microbial concentration of contaminate
 \item{propVarInter}{proportion of the total variance (\eqn{C0\_sdLog10^2}) attributed
 to between-lot variance. The remaining (\code{1-propVarInter}) is the proportion of within-lot variance.}
 
-\item{Poisson}{need to be defined}
-
 \item{...}{Other options used to control \code{\link[=LotGen]{LotGen()}}}
+
+\item{if}{Poisson is \code{TRUE}, a Poisson distribution is used with parameter lambda = -log(1 - prob) / 25, with prob ~ Beta(alpha, beta).
+Note that, in this case \code{C0MeanLog} and \code{C0SdLog} are not used.}
 }
 \value{
 A list of four elements:

@@ -123,6 +123,7 @@ caSoil2rind <- function(nLots,
   zeroes <- rowSums(N0) == 0
   if (all(zeroes, TRUE)) {
     N0[, 1] <- 1
+    zeroes <- rowSums(N0) == 0
   } else {
     # Trick to avoid bad behavior of sample
     N0[zeroes, ] <- N0[sample(rep(which(!zeroes), 2), sum(zeroes), replace = TRUE), ]

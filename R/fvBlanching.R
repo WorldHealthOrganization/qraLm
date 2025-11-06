@@ -104,7 +104,7 @@ fvBlanching <- function(data = list(),
   sumN1 <- extraDistr::rtbinom(n = nLots, size = sumN, prob = pSurvive, a = 0)
   # To avoid special cases with extremely low pSurvive
   # (check extraDistr::rtbinom(n= 10, size=10, prob = 1E-18, a=0))
-  sumN1[sumN1 == sumN & pSurvive < 1E-5] <- 1
+  sumN1 <- pmax(1, sumN)
 
   N1 <- mc2d::rmultinomial(n = nLots, size = sumN1, prob = data$N)
 

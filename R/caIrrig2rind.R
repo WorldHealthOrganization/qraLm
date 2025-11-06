@@ -98,6 +98,7 @@ caIrrig2rind <- function(nLots,
   zeroes <- rowSums(N0) == 0
   if (all(zeroes, TRUE)) {
     N0[, 1] <- 1
+    zeroes <- rowSums(N0) == 0
   } else {
     # Nice trick to avoid sample(10,2, replace=TRUE) vs sample(c(10,11),2, replace=TRUE)
     N0[zeroes, ] <- N0[sample(rep(which(!zeroes), 2), sum(zeroes), replace = TRUE), ]

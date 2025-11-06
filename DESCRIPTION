@@ -1,6 +1,6 @@
 Package: qraLm
 Title: Functions to develop quantitative risk assessment for Listeria monocytogenes in foods
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person("Vasco", "Cadavez", , "vcadavez@ipb.pt", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-3077-7414")),

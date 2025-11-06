@@ -110,10 +110,10 @@ sfBrineORsaltCC <- function(data = list(),
   # Sample the lots that will be brining (1) vs salting (0) as a function of pBrine
   n_lot <- stats::rbinom(nLots, size = 1, prob = pBrine)
   index_brine <- which(n_lot == 1)
-  index_salt <- which(n_lot == 0)
+  index_salt  <- which(n_lot == 0)
   
-  cat("Length of index_brine:", length(index_brine), "\n")
-  cat("Length of index_salt:", length(index_salt), "\n")
+  # cat("Length of index_brine:", length(index_brine), "\n")
+  # cat("Length of index_salt:", length(index_salt), "\n")
   
   # Lots of fish being injected with brine
   if (length(index_brine) > 0) { # some fishes are brined
@@ -136,9 +136,9 @@ sfBrineORsaltCC <- function(data = list(),
     )
     N_brine_out <- data_brine_out$N
     ProbUnitPos_brine_out <- data_brine_out$ProbUnitPos * pBrine
-    cat("Length of ProbUnitPos_brine_out:", length(ProbUnitPos_brine_out), "\n")
-    data$N[index_brine, ] <- N_brine_out
-    data$ProbUnitPos[index_brine] <- ProbUnitPos_brine_out
+    # cat("Length of ProbUnitPos_brine_out:", length(ProbUnitPos_brine_out), "\n")
+    N[index_brine, ] <- N_brine_out
+    ProbUnitPos[index_brine] <- ProbUnitPos_brine_out
   }
   
   # Lots of fish being dry-salted
@@ -160,15 +160,15 @@ sfBrineORsaltCC <- function(data = list(),
     N_salt_out <- data_salt_out$N
     ProbUnitPos_salt_out <- data_salt_out$ProbUnitPos * (1 - pBrine)
     
-    cat("Length of ProbUnitPos_salt_out:", length(ProbUnitPos_salt_out), "\n")
+    # cat("Length of ProbUnitPos_salt_out:", length(ProbUnitPos_salt_out), "\n")
     
     # Additional check for empty ProbUnitPos_salt_out
     if (length(ProbUnitPos_salt_out) == 0) {
       stop("ProbUnitPos_salt_out is empty. Cannot assign a zero-length vector.")
     }
     
-    data$N[index_salt, ] <- N_salt_out
-    data$ProbUnitPos[index_salt] <- ProbUnitPos_salt_out
+    N[index_salt, ] <- N_salt_out
+    ProbUnitPos[index_salt] <- ProbUnitPos_salt_out
   }
   
   # Calculating P
@@ -178,9 +178,10 @@ sfBrineORsaltCC <- function(data = list(),
   saltingType <- ifelse(n_lot == 1, "brined", "salted") # 1 for brined-injected lots and 0 dry-salted lots
   
   # Ensure these variables are defined before using them
-  N <- if (exists("N_salt_out", inherits = FALSE)) N_salt_out else N
-  ProbUnitPos <- if (exists("ProbUnitPos_salt_out", inherits = FALSE)) ProbUnitPos_salt_out else ProbUnitPos
-  
+  # Bug introduced during the development of the shiny
+  # N <- if (exists("N_salt_out", inherits = FALSE)) N_salt_out else N
+  # ProbUnitPos <- if (exists("ProbUnitPos_salt_out", inherits = FALSE)) ProbUnitPos_salt_out else ProbUnitPos
+
   lotMeans <- rowMeans(N / data$unitSize, na.rm = TRUE)
   unitsCounts <- (ProbUnitPos / mean(ProbUnitPos, na.rm = TRUE)) * (N / data$unitSize)
   

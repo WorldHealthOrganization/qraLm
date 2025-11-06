@@ -161,7 +161,7 @@ sfSlicer <- function(data = list(),
   # Just in case of zeroes (but shouldn't happen)
   zeroes <- rowSums(cfu.on.slices) == 0
   if (any(zeroes)) {
-    # warning(paste("Bateria added in", sum(zeroes), "lines because no bacteria were left."))
+    # warning(paste("Bacteria added in", sum(zeroes), "lines because no bacteria were left."))
     cfu.on.slices[zeroes, 1] <- 1
     Pi_0 <- sum(zeroes) / nLots
     data$P <- data$P * (1 - Pi_0)

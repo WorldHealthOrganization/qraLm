@@ -81,6 +81,8 @@ fvReductionPostpack <- function(data = list(),
   # but not a problem here
   sumN <- rowSums(Nbefore)
   sumN1 <- extraDistr::rtbinom(n = nLots, size = sumN, prob = pSurvive, a = 0)
+  # Protect
+  sumN1 <- pmax(1, sumN)
   N1 <- mc2d::rmultinomial(n = nLots, size = sumN1, prob = Nbefore)
 
   # Evaluate the probabilities of at least one survive

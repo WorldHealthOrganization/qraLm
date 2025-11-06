@@ -1,4 +1,5 @@
-url: https://rpouillot.github.io/qraLm/
+url: https://worldhealthorganization.github.io/qraLm/
 template:
   bootstrap: 5
+  math-rendering: mathjax
 
